@@ -87,7 +87,9 @@
 {% else %}
     <li><a href="{{ url(url, search|merge({'page': paging.page + 1})) }}">&raquo;</a></li>
 {% endif %}
+
 </ul>
+    <span>总计:{{  paging.total_pages  }}/每页:{{  num_pages  }}</span>
 </div>
 {% endmacro %}
 

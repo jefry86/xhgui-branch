@@ -71,12 +71,11 @@ if (file_exists($dir . '/config/config.php')) {
     Xhgui_Config::load($dir . '/config/config.php');
 }
 unset($dir);
-if(Xhgui_Config::read('debug'))
-{
-    ini_set('display_errors',1);
+if (Xhgui_Config::read('debug')) {
+    ini_set('display_errors', 1);
 }
 $filterPath = Xhgui_Config::read('profiler.filter_path');
-if(is_array($filterPath)&&in_array($_SERVER['DOCUMENT_ROOT'],$filterPath)){
+if (is_array($filterPath) && in_array($_SERVER['DOCUMENT_ROOT'], $filterPath)) {
     return;
 }
 
@@ -101,13 +100,13 @@ if ($extension == 'uprofiler' && extension_loaded('uprofiler')) {
 } else if ($extension == 'tideways' && extension_loaded('tideways')) {
     tideways_enable(TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY);
     tideways_span_create('sql');
-} else if(function_exists('xhprof_enable')){
+} else if (function_exists('xhprof_enable')) {
     if (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION > 4) {
         xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY | XHPROF_FLAGS_NO_BUILTINS);
     } else {
         xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
     }
-}else{
+} else {
     throw new Exception("Please check the extension name in config/config.default.php \r\n,you can use the 'php -m' command.", 1);
 }
 
@@ -122,11 +121,11 @@ register_shutdown_function(
             $data['profile'] = tideways_disable();
             $sqlData = tideways_get_spans();
             $data['sql'] = array();
-            if(isset($sqlData[1])){
-                foreach($sqlData as $val){
-                    if(isset($val['n'])&&$val['n'] === 'sql'&&isset($val['a'])&&isset($val['a']['sql'])){
-                        $_time_tmp = (isset($val['b'][0])&&isset($val['e'][0]))?($val['e'][0]-$val['b'][0]):0;
-                        if(!empty($val['a']['sql'])){
+            if (isset($sqlData[1])) {
+                foreach ($sqlData as $val) {
+                    if (isset($val['n']) && $val['n'] === 'sql' && isset($val['a']) && isset($val['a']['sql'])) {
+                        $_time_tmp = (isset($val['b'][0]) && isset($val['e'][0])) ? ($val['e'][0] - $val['b'][0]) : 0;
+                        if (!empty($val['a']['sql'])) {
                             $data['sql'][] = [
                                 'time' => $_time_tmp,
                                 'sql' => $val['a']['sql']
@@ -182,7 +181,11 @@ register_shutdown_function(
             'simple_url' => Xhgui_Util::simpleUrl($uri),
             'request_ts' => $requestTs,
             'request_ts_micro' => $requestTsMicro,
-            'request_date' => date('Y-m-d', $time),
+            'request_date' => date('Y-m-d H:i:s', $time),
+            'request_time' => array_key_exists('REQUEST_TIME_FLOAT', $_SERVER)
+                ? $_SERVER['REQUEST_TIME_FLOAT'] : 0,
+            'shutdown_time' => microtime(1),
+            'go_time' => empty($_SERVER['argv'][3]) ? 0 : $_SERVER['argv'][3]/1000,
         );
 
         try {

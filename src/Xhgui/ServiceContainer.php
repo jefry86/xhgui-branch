@@ -1,4 +1,5 @@
 <?php
+
 use Slim\Slim;
 use Slim\Views\Twig;
 use Slim\Middleware\SessionCookie;
@@ -88,7 +89,7 @@ class Xhgui_ServiceContainer extends Pimple
             return new Xhgui_Profiles($c['db']);
         };
 
-        $this['saver'] = function($c) {
+        $this['saver'] = function ($c) {
             $config = $c['config'];
             switch ($config['save.handler']) {
                 case 'file':
@@ -99,7 +100,7 @@ class Xhgui_ServiceContainer extends Pimple
             }
         };
 
-        $this['saverMongo'] = function($c) {
+        $this['saverMongo'] = function ($c) {
             return new Xhgui_Saver_Mongo($c['profiles']);
         };
     }
@@ -123,6 +124,10 @@ class Xhgui_ServiceContainer extends Pimple
 
         $this['waterfallController'] = function ($c) {
             return new Xhgui_Controller_Waterfall($c['app'], $c['profiles']);
+        };
+
+        $this['statController'] = function ($c) {
+            return new Xhgui_Controller_Stat($c['app'], $c['profiles'], $c['watchFunctions']);
         };
     }
 

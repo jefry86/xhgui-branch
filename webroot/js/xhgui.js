@@ -1,9 +1,9 @@
 window.Xhgui = window.Xhgui || {};
 
-Xhgui.tableSort = function(tables) {
+Xhgui.tableSort = function (tables) {
     tables.stickyTableHeaders();
     tables.tablesorter({
-        textExtraction: function(node) {
+        textExtraction: function (node) {
             if (node.className.match(/text/)) {
                 return node.innerText;
             }
@@ -37,6 +37,16 @@ $(document).ready(function () {
             searchExpand.show();
         });
         return false;
+    });
+
+    //时间选择器
+    laydate.render({
+        elem: '#date_start'
+        , type: 'datetime'
+    });
+    laydate.render({
+        elem: '#date_end'
+        , type: 'datetime'
     });
 
 });

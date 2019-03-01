@@ -14,14 +14,13 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         $request = $this->_app->request();
 
         $search = array();
-        $keys = array('date_start', 'date_end', 'url');
+        $keys = array('date_start', 'date_end', 'url', 'wt_start', 'wt_end');
         foreach ($keys as $key) {
             if ($request->get($key)) {
                 $search[$key] = $request->get($key);
             }
         }
         $sort = $request->get('sort');
-
         $result = $this->_profiles->getAll(array(
             'sort' => $sort,
             'page' => $request->get('page'),
@@ -72,11 +71,10 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         // Self wall time graph
         $timeChart = $result->extractDimension('ewt', $detailCount);
 
-        foreach($timeChart as $k=>$val){
-            $v = round($val['value']/1000,1);
-            if($v==0)
-            {
-                $v = round($val['value']/1000);
+        foreach ($timeChart as $k => $val) {
+            $v = round($val['value'] / 1000, 1);
+            if ($v == 0) {
+                $v = round($val['value'] / 1000);
             }
             $timeChart[$k]['value'] = $v;
         }
@@ -84,11 +82,10 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         // Memory Block
         $memoryChart = $result->extractDimension('emu', $detailCount);
 
-        foreach($memoryChart as $k=>$val){
-            $v = round($val['value']/1024,1);
-            if($v==0)
-            {
-                $v = round($val['value']/1024);
+        foreach ($memoryChart as $k => $val) {
+            $v = round($val['value'] / 1024, 1);
+            if ($v == 0) {
+                $v = round($val['value'] / 1024);
             }
             $memoryChart[$k]['value'] = $v;
         }
@@ -330,4 +327,5 @@ class Xhgui_Controller_Run extends Xhgui_Controller
         $response['Content-Type'] = 'application/json';
         return $response->body(json_encode($callgraph));
     }
+
 }

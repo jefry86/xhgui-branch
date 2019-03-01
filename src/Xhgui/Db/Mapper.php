@@ -26,7 +26,6 @@ class Xhgui_Db_Mapper
         if (isset($options['perPage'])) {
             $result['perPage'] = $options['perPage'];
         }
-
         return $result;
     }
 
@@ -48,11 +47,19 @@ class Xhgui_Db_Mapper
 
         $conditions = array();
         if (!empty($search['date_start']) && !$hasLimit) {
-            $conditions['meta.request_date']['$gte'] = (string)$search['date_start'];
+            $conditions['meta.request_ts']['$gte'] = new MongoDate(strtotime($search['date_start']));
         }
         if (!empty($search['date_end']) && !$hasLimit) {
-            $conditions['meta.request_date']['$lte'] = (string)$search['date_end'];
+            $conditions['meta.request_ts']['$lte'] = new MongoDate(strtotime($search['date_end']));
         }
+
+        if (!empty($search['wt_start']) && !$hasLimit) {
+            $conditions['profile.main().wt']['$gte'] = $search['wt_start'] * 1000;
+        }
+        if (!empty($search['wt_end']) && !$hasLimit) {
+            $conditions['profile.main().wt']['$lte'] = $search['wt_end'] * 1000;
+        }
+
         if (isset($search['simple_url'])) {
             $conditions['meta.simple_url'] = (string)$search['simple_url'];
         }
@@ -96,7 +103,7 @@ class Xhgui_Db_Mapper
     protected function _convertDate($dateString)
     {
         if (is_numeric($dateString)) {
-            return (float) $dateString;
+            return (float)$dateString;
         }
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $dateString);
         if (!$date) {
@@ -116,6 +123,7 @@ class Xhgui_Db_Mapper
         }
         return 'desc';
     }
+
     /**
      * Get sort options for a paginated set.
      *
@@ -145,7 +153,7 @@ class Xhgui_Db_Mapper
         } elseif ($options['sort'] == 'mu') {
             return array('profile.main().mu' => $direction);
         } elseif ($options['sort'] == 'cpu') {
-           return array('profile.main().cpu' => $direction);
+            return array('profile.main().cpu' => $direction);
         }
     }
 
